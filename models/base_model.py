@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 '''
-Module that define BaseModel class
+Module that defines BaseModel class
 '''
 import uuid
 from datetime import datetime
@@ -9,19 +9,30 @@ from datetime import datetime
 class BaseModel:
     '''
     BaseModel:
-        class that defines all common attributes/methods for other classes
+    Class that defines all common attributes/methods for other classes
     '''
-    def __init__(self):
+    forma = "%Y-%m-%dT%H:%M:%S.%f"
+
+    def __init__(self, *args, **kwargs):
         '''
         Initialization of the base model
         '''
-        self.id = str(uuid.uuid4())
-        self.created_at = self.updated_at = datetime.now()
+
+        if kwargs:
+            for key, value in kwargs.items():
+                if key in ["created_at", "updated_at"]:
+                    self.__dict__[key] =\
+                        datetime.strptime(value, BaseModel.forma)
+                elif key != "__class__":
+                    setattr(self, key, value)
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = self.updated_at = datetime.now()
 
     def __str__(self):
         '''
         Public instance attributes:
-        return the string representation of:
+        Return the string representation of:
         [<class name>] (<self.id>) <self.__dict__>
         '''
         return f"[{self.__class__.__name__}] ({self.id}) {self.__dict__}"
@@ -36,7 +47,8 @@ class BaseModel:
     def to_dict(self):
         '''
         Public instance methods:
-        dictionary containing all keys/values of __dict__ of the instance
+        Return a dictionary containing all keys/values of
+        __dict__ of the instance
         '''
         dict_copy = self.__dict__.copy()
         dict_copy["__class__"] = self.__class__.__name__
