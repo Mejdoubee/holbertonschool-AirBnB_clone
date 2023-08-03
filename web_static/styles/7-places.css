@@ -17,7 +17,6 @@ article {
     text-align: center;
 }
 
-
 .places {
 	width: 110px;
 	display: contents;
@@ -26,6 +25,9 @@ article {
 	margin: 20px 20px 20px;
 }
 
-.hxx  {
-    margin: 3px 267px 0px;
+.places > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
 }
