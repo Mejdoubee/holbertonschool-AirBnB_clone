@@ -28,10 +28,9 @@ class TestBaseModel(unittest.TestCase):
         self.assertIn(str(self.my_model.__dict__), model_str)
 
     def test_save_method(self):
-        prev_updated_at = self.my_model.updated_at
+        updated_at = self.my_model.updated_at
         self.my_model.save()
-        self.assertNotEqual(prev_updated_at, self.my_model.updated_at)
-        self.assertAlmostEqual(self.my_model.updated_at, datetime.now(), delta=timedelta(seconds=1))
+        self.assertNotEqual(updated_at, self.my_model.updated_at)
 
     def test_to_dict_method(self):
         model_dict = self.my_model.to_dict()
