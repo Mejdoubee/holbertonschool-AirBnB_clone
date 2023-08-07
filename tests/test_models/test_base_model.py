@@ -1,18 +1,12 @@
 #!/usr/bin/python3
-'''
-Unitest for BaseModel class
-'''
 import unittest
 from models.base_model import BaseModel
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class TestBaseModel(unittest.TestCase):
-    '''
-    Class TestBaseModel for BaseModel test cases
-    '''
 
-    def Test_Setup(self):
+    def setUp(self):
         '''
         SetUp testing
         '''
@@ -20,36 +14,37 @@ class TestBaseModel(unittest.TestCase):
         self.my_model.name = "My First Model"
         self.my_model.my_number = 89
 
-    def Test_Attributes(self):
-        '''
-        Attributes Testing
-        '''
+    def test_initialization(self):
         self.assertTrue(hasattr(self.my_model, 'id'))
         self.assertTrue(hasattr(self.my_model, 'created_at'))
         self.assertTrue(hasattr(self.my_model, 'updated_at'))
         self.assertEqual(type(self.my_model.id), str)
+        self.assertEqual(type(self.my_model.created_at), datetime)
 
-    def Test_save_method(self):
-        '''
-        Save method Testhing
-        '''
-        current_time = datetime.now()
-        old_update_time = self.my_model.updated_at
+    def test_string_representation(self):
+        model_str = str(self.my_model)
+        self.assertIn(self.my_model.__class__.__name__, model_str)
+        self.assertIn(self.my_model.id, model_str)
+        self.assertIn(str(self.my_model.__dict__), model_str)
+
+    def test_save_method(self):
+        prev_updated_at = self.my_model.updated_at
         self.my_model.save()
-        self.assertNotEqual(self.my_model.updated_at, old_update_time)
-        self.assertIsInstance(self.my_model.created_at, now)
+        self.assertNotEqual(prev_updated_at, self.my_model.updated_at)
+        self.assertAlmostEqual(self.my_model.updated_at, datetime.now(), delta=timedelta(seconds=1))
 
     def test_to_dict_method(self):
-        '''
-        To_dict_method testing
-        '''
-        self.my_model = BaseModel()
-        self.my_model.name = "My First Model"
-        self.my_model.my_number = 89
         model_dict = self.my_model.to_dict()
-        self.assertEqual(model_dict["name"], "My First Model")
+        self.assertIsInstance(model_dict, dict)
         self.assertEqual(model_dict['__class__'], 'BaseModel')
+        self.assertIn('id', model_dict)
+        self.assertIn('created_at', model_dict)
+        self.assertIn('updated_at', model_dict)
+
+    def test_custom_attributes(self):
+        self.assertEqual(self.my_model.name, "My First Model")
+        self.assertEqual(self.my_model.my_number, 89)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()
