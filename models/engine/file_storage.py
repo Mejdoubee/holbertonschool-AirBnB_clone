@@ -34,7 +34,7 @@ class FileStorage:
         '''
         obj_dict = {key: self.__objects[key].to_dict() for key in self.__objects.keys()}
         with open(self.__file_path, 'w') as f:
-            json.dump(json_dict, f)
+            json.dump(obj_dict, f)
 
     def reload(self):
         '''
@@ -42,7 +42,10 @@ class FileStorage:
         '''
         if os.path.exists(self.__file_path):
             with open(self.__file_path, 'r') as f:
-                json_objects = json.load(f)
+                try:
+                    json_objects = json.load(f)
+                except json.JSONDecodeError:
+                    json_objects = {}
                 self.__objects = {}
                 class_map = {'BaseModel': BaseModel}
                 for key, value in json_objects.items():
