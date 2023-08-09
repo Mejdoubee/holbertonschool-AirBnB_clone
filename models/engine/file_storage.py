@@ -44,11 +44,10 @@ class FileStorage:
             with open(self.__file_path, 'r') as f:
                 json_objects = json.load(f)
                 self.__objects = {}
+                class_map = {'BaseModel': BaseModel}
                 for key, value in json_objects.items():
                     class_name = value["__class__"]
-                    class_map = {'BaseModel': BaseModel}
                     obj_class = class_map.get(class_name)
-                    obj = eval(class_name)(**value)
                     if obj_class:
                         obj = obj_class(**value)
                         self.__objects[key] = obj
