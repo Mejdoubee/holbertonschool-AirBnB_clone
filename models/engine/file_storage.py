@@ -56,5 +56,5 @@ class FileStorage:
                         obj = class_instance(**val)
                         self.new(obj)
 
-        except FileNotFoundError:
+        except (FileNotFoundError, json.JSONDecodeError):
             return
