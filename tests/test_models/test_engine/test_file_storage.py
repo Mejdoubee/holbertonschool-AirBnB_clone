@@ -4,8 +4,10 @@ from models.base_model import BaseModel
 from models.engine.file_storage import FileStorage
 import os
 
+
 class TestFileStorage(unittest.TestCase):
-    
+    '''TestFileStorage Class'''
+
     def setUp(self):
         '''Set up method for FileStorage tests'''
         self.storage = FileStorage()
@@ -43,6 +45,37 @@ class TestFileStorage(unittest.TestCase):
     def tearDown(self):
         if os.path.exists(self.file_path):
             os.remove(self.file_path)
+
+    def test_new_with_different_objects(self):
+        '''Test that new method can handle different types of objects'''
+        class DummyClass:
+            pass
+
+        dummy_obj = DummyClass()
+        with self.assertRaises(AttributeError):
+            self.storage.new(dummy_obj)
+
+    def test_save_creates_file(self):
+        '''Test that save method creates file if it doesn't exist'''
+        if os.path.exists(self.file_path):
+            os.remove(self.file_path)
+        self.storage.save()  # Fixed here
+        self.assertTrue(os.path.exists(self.file_path))
+
+    def test_reload_with_nonexistent_file(self):
+        '''Test that reload method handles nonexistent file'''
+        if os.path.exists(self.file_path):
+            os.remove(self.file_path)
+        # Should not raise an exception
+        self.storage.reload()  # Fixed here
+
+    def test_reload_with_corrupted_json(self):
+        '''Test that reload method handles corrupted JSON file'''
+        with open(self.file_path, 'w') as file:
+            file.write("This is not valid JSON content")
+        # Should not raise an exception
+        self.storage.reload()  # Fixed here
+
 
 if __name__ == "__main__":
     unittest.main()
