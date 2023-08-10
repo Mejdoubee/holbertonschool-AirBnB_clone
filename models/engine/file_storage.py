@@ -3,9 +3,8 @@
 Model defines file_storage class that serializes instances
 to a JSON file and deserializes JSON file to instances
 '''
-from models.base_model import BaseModel
 import json
-import os
+from models.base_model import BaseModel
 
 
 class FileStorage:
@@ -32,26 +31,30 @@ class FileStorage:
         '''
         Serializes __objects to the JSON file
         '''
-        obj_dict = {key: self.__objects[key].to_dict() for key in self.__objects.keys()}
         with open(self.__file_path, 'w') as f:
-            json.dump(obj_dict, f)
+            json.dump(
+                {key: obj.to_dict() for key, obj in self.__objects.items()}, f)
 
     def reload(self):
         '''
         Deserializes the JSON file to __objects
         '''
-        if os.path.exists(self.__file_path):
-            with open(self.__file_path, 'r') as f:
-                try:
-                    json_objects = json.load(f)
-                except json.JSONDecodeError:
-                    json_objects = {}
-                self.__objects = {}
-                class_map = {'BaseModel': BaseModel}
-                for key, value in json_objects.items():
-                    class_name = value["__class__"]
-                    obj_class = class_map.get(class_name)
-                    if obj_class:
-                        obj = obj_class(**value)
-                        self.__objects[key] = obj
+        try:
+            with open(FileStorage.__file_path) as file:
+                obj_dict = json.load(file)
 
+            class_mapping = {}
+            for name, obj in globals().items():
+                if isinstance(obj, type):
+                    class_mapping[name] = obj
+
+            for val in obj_dict.values():
+                class_name = val.pop("__class__", None)
+                if class_name:
+                    class_instance = class_mapping.get(class_name)
+                    if class_instance:
+                        obj = class_instance(**val)
+                        self.new(obj)
+
+        except FileNotFoundError:
+            return
