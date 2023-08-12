@@ -112,7 +112,9 @@ class HBNBCommand(cmd.Cmd):
                 print("** class doesn't exist **")
                 return
             dict_obj = storage.all()
-            printed_result = [str(value) for key, value in dict_obj.items() if key.split(".")[0] == args[0]]
+            printed_result = [
+                str(value) for key, value in dict_obj.items()
+                if key.split(".")[0] == args[0]]
             print(printed_result)
         else:
             dict_obj = storage.all()
